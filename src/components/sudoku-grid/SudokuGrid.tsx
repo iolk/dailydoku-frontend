@@ -4,10 +4,17 @@ import useSettingsStore from '../../store/settings'
 import SudokuCell from './SudokuCell'
 
 const SudokuGrid: FunctionComponent = () => {
-  const { grid, insertNumber, toggleCandidate } = useGameStore((state) => state)
+  const { insertNumber, deleteNumber, toggleCandidate } = useGameStore(
+    (state) => state
+  )
   const { isCandidatesMode } = useSettingsStore((state) => state)
 
-  function insertNumberFromKeyboard(e: KeyboardEvent) {
+  function manageInputFromKeyboard(e: KeyboardEvent) {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      deleteNumber()
+      return
+    }
+
     const number = Number(e.key)
     if (number >= 1 && number <= 9) {
       if (isCandidatesMode) {
@@ -19,16 +26,16 @@ const SudokuGrid: FunctionComponent = () => {
   }
 
   useEffect(() => {
-    window.addEventListener('keydown', insertNumberFromKeyboard)
+    window.addEventListener('keydown', manageInputFromKeyboard)
 
     return () => {
-      window.removeEventListener('keydown', insertNumberFromKeyboard)
+      window.removeEventListener('keydown', manageInputFromKeyboard)
     }
   })
 
   return (
     <div className="grid grid-cols-9 grid-rows-9 rounded-2xl shadow-xl overflow-hidden">
-      {grid.map((cell, index) => (
+      {[...Array(81)].map((_, index) => (
         <SudokuCell key={index} cellIndex={index} />
       ))}
     </div>

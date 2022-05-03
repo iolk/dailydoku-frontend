@@ -1,7 +1,13 @@
+export type QuadrantInfo = {
+  x: number
+  y: number
+  index: number
+}
+
 export type CellInfo = {
   x: number
   y: number
-  quadrant: number
+  quadrant: QuadrantInfo
 }
 
 export const areCellsOnSameRow = (a: CellInfo, b: CellInfo) => a.x === b.x
@@ -18,6 +24,10 @@ export default function getCellInfo(cell: number): CellInfo {
   const cellXY = getCellXY(cell)
   return {
     ...cellXY,
-    quadrant: Math.floor(cellXY.x / 3) + 3 * Math.floor(cellXY.y / 3)
+    quadrant: {
+      x: 3 * Math.floor(cellXY.x / 3),
+      y: 3 * Math.floor(cellXY.y / 3),
+      index: Math.floor(cellXY.x / 3) + 3 * Math.floor(cellXY.y / 3)
+    }
   }
 }
