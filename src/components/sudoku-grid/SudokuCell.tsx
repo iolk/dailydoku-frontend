@@ -7,7 +7,7 @@ import SudokuCellCandidates from './SudokuCellCandidates'
 const SudokuCell: FunctionComponent<{
   cellIndex: number
 }> = ({ cellIndex }) => {
-  const { grid, errors, selectedCell, setselectedCell } = useGameStore(
+  const { grid, lockedCells, errors, selectedCell, selectCell } = useGameStore(
     (state) => state
   )
 
@@ -29,24 +29,31 @@ const SudokuCell: FunctionComponent<{
     (areCellsAligned(cellInfo, selectedCellInfo) ||
       cellInfo.quadrant.index === selectedCellInfo.quadrant.index)
 
+  const isLocked = !isHighlighted && !isSelected && lockedCells[cellIndex]
+
   const hasGridRBorder = (cellInfo.x + 1) % 3 === 0 && cellInfo.x != 8
   const hasGridBBorder = (cellInfo.y + 1) % 3 === 0 && cellInfo.y != 8
 
   return (
     <div
-      onClick={() => setselectedCell(cellIndex)}
+      onClick={() => selectCell(cellIndex)}
       className={classNames(
-        'h-20 w-20',
-        isSelected ? 'bg-red-200' : '',
-        isHighlighted ? 'bg-blue-200' : '',
-        isSameNumberAsSelected ? 'bg-green-200' : '',
+        'aspect-square',
+        isLocked ? 'bg-gray-50' : '',
+        isSelected ? 'bg-blue-400 text-white' : '',
+        isSameNumberAsSelected ? 'bg-blue-400 text-white' : '',
+        isHighlighted ? 'bg-blue-100' : '',
         hasError ? 'text-red-600' : '',
-        hasGridRBorder ? 'border-r-4 border-r-blue-400' : 'border-r',
-        hasGridBBorder ? 'border-b-4 border-b-blue-400' : 'border-b'
+        hasGridRBorder
+          ? 'border-r-2 md:border-r-4 border-r-slate-900'
+          : 'border-r border-slate-300',
+        hasGridBBorder
+          ? 'border-b-2 md:border-b-4 border-b-slate-900'
+          : 'border-b border-slate-300'
       )}
     >
       {grid[cellIndex] ? (
-        <div className="flex h-full w-full justify-center items-center font-medium text-4xl">
+        <div className="flex h-full w-full justify-center items-center text-xl md:text-4xl font-bold relative">
           {grid[cellIndex]}
         </div>
       ) : (

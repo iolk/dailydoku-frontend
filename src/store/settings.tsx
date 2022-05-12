@@ -1,16 +1,5 @@
 import create from 'zustand'
 
-const useSettingsStore = create<{
-  isCandidatesMode: boolean
-  toggleIsCandidatesMode: () => void
-}>((set) => ({
-  isCandidatesMode: false,
-
-  toggleIsCandidatesMode: () =>
-    set((state) => ({
-      ...state,
-      isCandidatesMode: !state.isCandidatesMode
-    }))
-}))
+const useSettingsStore = create((set) => ({}))
 
 export default useSettingsStore
