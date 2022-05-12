@@ -7,7 +7,7 @@ import Router from './router'
 const rootElement = document.getElementById('root')
 render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/dailydoku-frontend">
       <Router />
     </BrowserRouter>
   </React.StrictMode>,
