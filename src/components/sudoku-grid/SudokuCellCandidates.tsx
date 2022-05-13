@@ -18,7 +18,7 @@ const SudokuCellCandidates: FunctionComponent<{
         <div key={number} className="flex justify-center items-center ">
           <div
             className={classNames(
-              'rounded-md h-[11px] w-[11px] md:h-4 md:w-4 flex items-center justify-center text-2xs md:text-sm',
+              'rounded-md h-[14px] w-[14px] md:h-4 md:w-4 flex items-center justify-center text-xs md:text-sm',
               !candidates.has(number + 1) ? 'hidden' : '',
               isSameNumberAsSelected(number + 1)
                 ? 'bg-blue-400 text-white'

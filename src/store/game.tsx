@@ -1,43 +1,52 @@
-import { getSudoku } from 'fake-sudoku-puzzle-generator'
+import { Difficulty, getSudoku } from 'fake-sudoku-puzzle-generator'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import getCellInfo from '../utils'
 
+export type GameState = {
+  selectedCell: number | null
+  lockedInsertNumber: number | null
+  grid: (number | null)[]
+  lockedCells: boolean[]
+  errors: Set<number>[]
+  candidates: Set<number>[]
+  isCandidatesMode: boolean
+}
+
+const initialGameState: () => GameState = () => ({
+  selectedCell: null,
+  lockedInsertNumber: null,
+  grid: Array(81).fill(null),
+  lockedCells: Array(81).fill(false),
+  errors: [...Array(81)].map(() => new Set()),
+  candidates: [...Array(81)].map(() => new Set()),
+  isCandidatesMode: false
+})
+
 const useGameStore = create(
-  persist<{
-    selectedCell: number | null
-    lockedInsertNumber: number | null
-    grid: (number | null)[]
-    lockedCells: boolean[]
-    errors: Set<number>[]
-    candidates: Set<number>[]
-    isCandidatesMode: boolean
+  persist<
+    GameState & {
+      toggleIsCandidatesMode: () => void
 
-    toggleIsCandidatesMode: () => void
+      restartGame: (difficulty: Difficulty) => void
+      generateGrid: (difficulty: Difficulty) => void
 
-    generateGrid: () => void
+      insertNumber: (number: number) => void
+      deleteNumber: () => void
+      replaceNumber: (number: number | null) => void
 
-    insertNumber: (number: number) => void
-    deleteNumber: () => void
-    replaceNumber: (number: number | null) => void
+      computeErrors: () => void
+      removeErrors: () => void
 
-    computeErrors: () => void
-    removeErrors: () => void
+      toggleCandidate: (number: number) => void
 
-    toggleCandidate: (number: number) => void
-
-    selectCell: (cell: number | null) => void
-    setSelectedCell: (cell: number | null) => void
-    setLockedInsertNumber: (number: number | null) => void
-  }>(
+      selectCell: (cell: number | null) => void
+      setSelectedCell: (cell: number | null) => void
+      setLockedInsertNumber: (number: number | null) => void
+    }
+  >(
     (set, get) => ({
-      selectedCell: null,
-      lockedInsertNumber: null,
-      grid: Array(81).fill(null),
-      lockedCells: Array(81).fill(false),
-      errors: [...Array(81)].map(() => new Set()),
-      candidates: [...Array(81)].map(() => new Set()),
-      isCandidatesMode: false,
+      ...initialGameState(),
 
       toggleIsCandidatesMode: () =>
         set((state) => ({
@@ -45,13 +54,22 @@ const useGameStore = create(
           isCandidatesMode: !state.isCandidatesMode
         })),
 
-      generateGrid: () =>
+      restartGame: (difficulty: Difficulty) => {
+        set((state) => ({
+          ...state,
+          ...initialGameState()
+        }))
+
+        get().generateGrid(difficulty)
+      },
+
+      generateGrid: (difficulty: Difficulty) =>
         set((state) => {
           if (state.grid.find((cell) => cell !== null)) {
             return state
           }
 
-          const puzzle = getSudoku('Medium')
+          const puzzle = getSudoku(difficulty)
           let i = 0
           const grid = []
           for (const row of puzzle) {
