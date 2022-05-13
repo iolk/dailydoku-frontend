@@ -8,7 +8,7 @@ const rootElement = document.getElementById('root')
 
 render(
   <React.StrictMode>
-    <BrowserRouter basename="/dailydoku-frontend">
+    <BrowserRouter>
       <Router />
     </BrowserRouter>
   </React.StrictMode>,
