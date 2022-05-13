@@ -5,6 +5,7 @@ import './assets/css/index.css'
 import Router from './router'
 
 const rootElement = document.getElementById('root')
+
 render(
   <React.StrictMode>
     <BrowserRouter basename="/dailydoku-frontend">
