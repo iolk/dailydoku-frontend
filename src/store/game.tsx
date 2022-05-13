@@ -96,6 +96,7 @@ const useGameStore = create(
           get().toggleCandidate(number)
         } else {
           get().replaceNumber(number)
+          get().removeErrors()
           get().computeErrors()
         }
       },
