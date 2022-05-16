@@ -4,7 +4,7 @@ import useGameStore from '../store/game'
 
 const GameResetButton: FunctionComponent = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>('Medium')
-  const { restartGame } = useGameStore((state) => state)
+  const restartGame = useGameStore((state) => state.restartGame)
 
   return (
     <div className="flex">

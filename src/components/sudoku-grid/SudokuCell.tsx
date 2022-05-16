@@ -7,27 +7,34 @@ import SudokuCellCandidates from './SudokuCellCandidates'
 const SudokuCell: FunctionComponent<{
   cellIndex: number
 }> = ({ cellIndex }) => {
-  const {
-    grid,
-    lockedCells,
-    errors,
-    selectedCell,
-    lockedInsertNumber,
-    selectCell
-  } = useGameStore((state) => state)
+  const grid = useGameStore((state) => state.grid)
+  const isCellLocked = useGameStore((state) => state.lockedCells[cellIndex])
+  const errors = useGameStore((state) => state.errors[cellIndex])
+  const selectedCell = useGameStore((state) => state.selectedCell)
+  const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
+  const selectCell = useGameStore((state) => state.selectCell)
 
   const selectedCellInfo =
     selectedCell != null ? getCellInfo(selectedCell) : null
   const cellInfo = getCellInfo(cellIndex)
 
-  const isSelected = cellIndex === selectedCell
-  const hasError = errors[cellIndex].size > 0
+  const isSelected = cellIndex === selectedCell && lockedInsertNumber == null
+
+  const hasError = errors.size > 0
+
   const isSameNumberAsSelected =
     (lockedInsertNumber != null && grid[cellIndex] === lockedInsertNumber) ||
     (lockedInsertNumber == null &&
       selectedCell != null &&
+      grid[cellIndex] &&
       !isSelected &&
       grid[cellIndex] === grid[selectedCell])
+
+  const isSelectedHighlight =
+    lockedInsertNumber != null &&
+    cellIndex === selectedCell &&
+    !isSameNumberAsSelected
+
   const isHighlighted =
     !isSameNumberAsSelected &&
     selectedCellInfo &&
@@ -35,7 +42,7 @@ const SudokuCell: FunctionComponent<{
     (areCellsAligned(cellInfo, selectedCellInfo) ||
       cellInfo.quadrant.index === selectedCellInfo.quadrant.index)
 
-  const isLocked = !isHighlighted && !isSelected && lockedCells[cellIndex]
+  const isLocked = !isHighlighted && !isSelected && isCellLocked
 
   const hasGridRBorder = (cellInfo.x + 1) % 3 === 0 && cellInfo.x != 8
   const hasGridBBorder = (cellInfo.y + 1) % 3 === 0 && cellInfo.y != 8
@@ -46,6 +53,7 @@ const SudokuCell: FunctionComponent<{
       className={classNames(
         'aspect-square',
         isLocked ? 'bg-gray-50' : '',
+        isSelectedHighlight ? 'bg-blue-300' : '',
         isSelected ? 'bg-blue-400 text-white' : '',
         isSameNumberAsSelected ? 'bg-blue-400 text-white' : '',
         isHighlighted ? 'bg-blue-100' : '',

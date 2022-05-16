@@ -6,13 +6,12 @@ import useGameStore from '../../store/game'
 const NumberPadButton: FunctionComponent<{
   number?: number
 }> = ({ number }) => {
-  const {
-    lockedInsertNumber,
-    insertNumber,
-    deleteNumber,
-    setLockedInsertNumber
-  } = useGameStore((state) => state)
-
+  const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
+  const insertNumber = useGameStore((state) => state.insertNumber)
+  const deleteNumber = useGameStore((state) => state.deleteNumber)
+  const setLockedInsertNumber = useGameStore(
+    (state) => state.setLockedInsertNumber
+  )
   const bindLongPress = useLongPress(() => {
     setLockedInsertNumber(number ?? null)
   })

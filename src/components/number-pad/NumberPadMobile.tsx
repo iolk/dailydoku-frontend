@@ -4,8 +4,9 @@ import useGameStore from '../../store/game'
 import NumberPadButton from './NumberPadButton'
 
 const NumberPadMobile: FunctionComponent = () => {
-  const { isCandidatesMode, toggleIsCandidatesMode } = useGameStore(
-    (state) => state
+  const isCandidatesMode = useGameStore((state) => state.isCandidatesMode)
+  const toggleIsCandidatesMode = useGameStore(
+    (state) => state.toggleIsCandidatesMode
   )
 
   return (
