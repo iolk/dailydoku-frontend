@@ -12,22 +12,22 @@ const NumberPadMobile: FunctionComponent = () => {
     <div className="gap-2 md:gap-4 grid grid-cols-6 w-full justify-between">
       <div className="gap-2 md:gap-4 grid grid-cols-1 place-content-between">
         <NumberPadButton number={1} />
-        <NumberPadButton number={2} />
-      </div>
-      <div className="gap-2 md:gap-4 grid grid-cols-1 place-content-between">
-        <NumberPadButton number={3} />
-        <NumberPadButton number={4} />
-      </div>
-      <div className="gap-2 md:gap-4 grid grid-cols-1 place-content-between">
-        <NumberPadButton number={5} />
         <NumberPadButton number={6} />
       </div>
       <div className="gap-2 md:gap-4 grid grid-cols-1 place-content-between">
+        <NumberPadButton number={2} />
         <NumberPadButton number={7} />
+      </div>
+      <div className="gap-2 md:gap-4 grid grid-cols-1 place-content-between">
+        <NumberPadButton number={3} />
         <NumberPadButton number={8} />
       </div>
       <div className="gap-2 md:gap-4 grid grid-cols-1 place-content-between">
+        <NumberPadButton number={4} />
         <NumberPadButton number={9} />
+      </div>
+      <div className="gap-2 md:gap-4 grid grid-cols-1 place-content-between">
+        <NumberPadButton number={5} />
         <NumberPadButton />
       </div>
       <div
