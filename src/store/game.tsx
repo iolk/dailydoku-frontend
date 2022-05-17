@@ -4,24 +4,28 @@ import { persist } from 'zustand/middleware'
 import getCellInfo from '../utils'
 
 export type GameState = {
+  isGameWin: boolean
+  isGameInitialized: boolean
+  isCandidatesMode: boolean
   selectedCell: number | null
   lockedInsertNumber: number | null
   grid: (number | null)[]
   lockedCells: boolean[]
   errors: Set<number>[]
   candidates: Set<number>[]
-  isCandidatesMode: boolean
   numberCounters: number[]
 }
 
 const initialGameState: () => GameState = () => ({
+  isGameWin: false,
+  isGameInitialized: false,
+  isCandidatesMode: false,
   selectedCell: null,
   lockedInsertNumber: null,
   grid: Array(81).fill(null),
   lockedCells: Array(81).fill(false),
   errors: [...Array(81)].map(() => new Set()),
   candidates: [...Array(81)].map(() => new Set()),
-  isCandidatesMode: false,
   numberCounters: Array(10).fill(0)
 })
 
@@ -36,6 +40,7 @@ const useGameStore = create(
       insertNumber: (number: number) => void
       deleteNumber: () => void
       replaceNumber: (number: number | null) => void
+      checkWin: () => void
 
       computeErrors: () => void
       removeErrors: () => void
@@ -59,7 +64,8 @@ const useGameStore = create(
       restartGame: (difficulty: Difficulty) => {
         set((state) => ({
           ...state,
-          ...initialGameState()
+          ...initialGameState(),
+          isGameInitialized: true
         }))
 
         get().generateGrid(difficulty)
@@ -91,6 +97,19 @@ const useGameStore = create(
           }
         }),
 
+      checkWin: () => {
+        const isWin =
+          get().grid.every((cell) => cell != null) &&
+          !get().errors.some((errors) => errors.size > 0)
+
+        if (isWin) {
+          set((state) => ({
+            ...state,
+            isGameWin: isWin
+          }))
+        }
+      },
+
       insertNumber: (number) => {
         const selected = get().selectedCell
         const isCellLocked = selected && get().lockedCells[selected]
@@ -108,8 +127,11 @@ const useGameStore = create(
           get().toggleCandidate(number)
         } else {
           get().replaceNumber(number)
+          if (number) {
+            get().computeErrors()
+            get().checkWin()
+          }
           get().removeErrors()
-          get().computeErrors()
         }
       },
 

@@ -57,7 +57,7 @@ const SudokuCell: FunctionComponent<{
     <div
       onClick={() => selectCell(cellIndex)}
       className={classNames(
-        'aspect-square',
+        'aspect-square cursor-pointer',
         isLocked ? 'bg-gray-100' : '',
         isSelectedHighlight ? 'bg-blue-300' : '',
         isSelected ? 'bg-blue-400 text-white' : '',

@@ -9,6 +9,7 @@
     "lint": "eslint . --ext .ts,.tsx,.js"
   },
   "dependencies": {
+    "canvas-confetti": "^1.5.1",
     "classnames": "^2.3.1",
     "fake-sudoku-puzzle-generator": "^1.2.1",
     "framer-motion": "^6.2.8",

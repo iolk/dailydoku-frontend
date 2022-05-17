@@ -7,11 +7,11 @@ const GameResetButton: FunctionComponent = () => {
   const restartGame = useGameStore((state) => state.restartGame)
 
   return (
-    <div className="flex">
+    <div className="flex w-full">
       <select
         defaultValue={difficulty}
         onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-        className="px-3 py-2 text-base rounded-l-lg bg-white"
+        className="px-3 py-2 rounded-l-lg bg-white w-1/2"
       >
         <option value="Very Easy">Molto facile</option>
         <option value="Easy">Facile</option>
@@ -20,9 +20,9 @@ const GameResetButton: FunctionComponent = () => {
       </select>
       <button
         onClick={() => restartGame(difficulty)}
-        className="bg-blue-500 hover:bg-blue-400 text-white rounded-r-lg h-[] px-3 py-2 text-base font-bold"
+        className="bg-blue-500 hover:bg-blue-400 text-white rounded-r-lg h-[] px-3 py-2 font-bold w-1/2"
       >
-        Genera
+        Gioca ora!
       </button>
     </div>
   )
