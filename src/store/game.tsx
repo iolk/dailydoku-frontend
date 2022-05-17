@@ -127,11 +127,12 @@ const useGameStore = create(
           get().toggleCandidate(number)
         } else {
           get().replaceNumber(number)
+          get().removeErrors()
+
           if (number) {
             get().computeErrors()
             get().checkWin()
           }
-          get().removeErrors()
         }
       },
 
@@ -149,14 +150,16 @@ const useGameStore = create(
           if (state.selectedCell == null) {
             return state
           }
+
           const errorsCopy = [...state.errors]
           for (const index of errorsCopy[state.selectedCell]) {
             errorsCopy[index].delete(state.selectedCell)
           }
           errorsCopy[state.selectedCell].clear()
+
           return {
             ...state,
-            errorsCopy
+            errors: errorsCopy
           }
         }),
 

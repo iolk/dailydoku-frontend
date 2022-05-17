@@ -7,10 +7,13 @@ import SudokuCellCandidates from './SudokuCellCandidates'
 const SudokuCell: FunctionComponent<{
   cellIndex: number
 }> = ({ cellIndex }) => {
-  const grid = useGameStore((state) => state.grid)
+  const cell = useGameStore((state) => state.grid[cellIndex])
   const isCellLocked = useGameStore((state) => state.lockedCells[cellIndex])
-  const errors = useGameStore((state) => state.errors[cellIndex])
+  const errors = useGameStore((state) => state.errors)
   const selectedCell = useGameStore((state) => state.selectedCell)
+  const selectedCellNumber = selectedCell
+    ? useGameStore((state) => state.grid[selectedCell])
+    : null
   const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
   const selectCell = useGameStore((state) => state.selectCell)
 
@@ -20,15 +23,15 @@ const SudokuCell: FunctionComponent<{
 
   const isSelected = cellIndex === selectedCell && lockedInsertNumber == null
 
-  const hasError = errors.size > 0
+  const hasError = errors[cellIndex].size > 0
 
   const isSameNumberAsSelected =
-    (lockedInsertNumber != null && grid[cellIndex] === lockedInsertNumber) ||
+    (lockedInsertNumber != null && cell === lockedInsertNumber) ||
     (lockedInsertNumber == null &&
       selectedCell != null &&
-      grid[cellIndex] &&
+      cell &&
       !isSelected &&
-      grid[cellIndex] === grid[selectedCell])
+      cell === selectedCellNumber)
 
   const isSelectedHighlight =
     lockedInsertNumber != null &&
@@ -72,9 +75,9 @@ const SudokuCell: FunctionComponent<{
           : 'border-b border-slate-300'
       )}
     >
-      {grid[cellIndex] ? (
+      {cell ? (
         <div className="flex h-full w-full justify-center items-center text-xl md:text-4xl font-bold relative">
-          {grid[cellIndex]}
+          {cell}
         </div>
       ) : (
         <SudokuCellCandidates cellIndex={cellIndex} />
