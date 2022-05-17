@@ -1,23 +1,23 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { Outlet } from 'react-router'
 import { useRegisterSW } from 'virtual:pwa-register/react'
-import ReloadPrompt from './components/pwa/ReloadPrompt'
+import PWAReloadToast from './components/pwa/PWAReloadToast'
 
 function App(): ReactElement {
   const intervalMS = 60 * 60 * 1000
 
   const updateServiceWorker = useRegisterSW({
-    onRegistered(r) {
-      r &&
+    onRegistered(registration) {
+      registration &&
         setInterval(() => {
-          r.update()
+          registration.update()
         }, intervalMS)
     }
   })
 
   return (
     <div>
-      <ReloadPrompt />
+      <PWAReloadToast />
       <Outlet />
     </div>
   )
