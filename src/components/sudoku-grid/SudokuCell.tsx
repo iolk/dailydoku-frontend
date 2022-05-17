@@ -37,6 +37,7 @@ const SudokuCell: FunctionComponent<{
 
   const isHighlighted =
     !isSameNumberAsSelected &&
+    !isSelectedHighlight &&
     selectedCellInfo &&
     !isSelected &&
     (areCellsAligned(cellInfo, selectedCellInfo) ||
