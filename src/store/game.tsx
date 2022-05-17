@@ -11,6 +11,7 @@ export type GameState = {
   errors: Set<number>[]
   candidates: Set<number>[]
   isCandidatesMode: boolean
+  numberCounters: number[]
 }
 
 const initialGameState: () => GameState = () => ({
@@ -20,7 +21,8 @@ const initialGameState: () => GameState = () => ({
   lockedCells: Array(81).fill(false),
   errors: [...Array(81)].map(() => new Set()),
   candidates: [...Array(81)].map(() => new Set()),
-  isCandidatesMode: false
+  isCandidatesMode: false,
+  numberCounters: Array(10).fill(0)
 })
 
 const useGameStore = create(
@@ -72,16 +74,19 @@ const useGameStore = create(
           const puzzle = getSudoku(difficulty)
           let i = 0
           const grid = []
+          const numberCounters = Array(10).fill(0)
           for (const row of puzzle) {
             for (const element of row) {
               grid[i++] = element
               if (element) {
+                numberCounters[element]++
                 state.lockedCells[i - 1] = true
               }
             }
           }
           return {
             ...state,
+            numberCounters,
             grid
           }
         }),
@@ -133,11 +138,26 @@ const useGameStore = create(
           }
 
           const gridCopy = [...state.grid]
+          const numberCountersCopy = [...state.numberCounters]
+
+          const previousNumber = gridCopy[state.selectedCell]
+
           gridCopy[state.selectedCell] = number
+          if (previousNumber) {
+            numberCountersCopy[previousNumber]--
+          }
+          if (number) {
+            numberCountersCopy[number]++
+          }
 
           return {
             ...state,
-            grid: gridCopy
+            grid: gridCopy,
+            numberCounters: numberCountersCopy,
+            lockedInsertNumber:
+              numberCountersCopy[number ?? 0] >= 9
+                ? null
+                : state.lockedInsertNumber
           }
         }),
 

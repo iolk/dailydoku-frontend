@@ -43,7 +43,8 @@ const SudokuCell: FunctionComponent<{
     (areCellsAligned(cellInfo, selectedCellInfo) ||
       cellInfo.quadrant.index === selectedCellInfo.quadrant.index)
 
-  const isLocked = !isHighlighted && !isSelected && isCellLocked
+  const isLocked =
+    !isHighlighted && !isSelected && !isSameNumberAsSelected && isCellLocked
 
   const hasGridRBorder = (cellInfo.x + 1) % 3 === 0 && cellInfo.x != 8
   const hasGridBBorder = (cellInfo.y + 1) % 3 === 0 && cellInfo.y != 8
@@ -53,7 +54,7 @@ const SudokuCell: FunctionComponent<{
       onClick={() => selectCell(cellIndex)}
       className={classNames(
         'aspect-square',
-        isLocked ? 'bg-gray-50' : '',
+        isLocked ? 'bg-gray-100' : '',
         isSelectedHighlight ? 'bg-blue-300' : '',
         isSelected ? 'bg-blue-400 text-white' : '',
         isSameNumberAsSelected ? 'bg-blue-400 text-white' : '',
