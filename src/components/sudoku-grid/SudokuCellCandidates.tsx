@@ -5,12 +5,16 @@ import useGameStore from '../../store/game'
 const SudokuCellCandidates: FunctionComponent<{
   cellIndex: number
 }> = ({ cellIndex }) => {
+  const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
   const candidates = useGameStore((state) => state.candidates[cellIndex])
   const { grid, selectedCell } = useGameStore((state) => state)
 
   const isSelected = cellIndex === selectedCell
   function isSameNumberAsSelected(candidate: number) {
-    return selectedCell && candidate === grid[selectedCell]
+    return (
+      (selectedCell && candidate === grid[selectedCell]) ||
+      candidate === lockedInsertNumber
+    )
   }
 
   return (

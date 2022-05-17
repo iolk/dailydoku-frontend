@@ -44,7 +44,11 @@ const SudokuCell: FunctionComponent<{
       cellInfo.quadrant.index === selectedCellInfo.quadrant.index)
 
   const isLocked =
-    !isHighlighted && !isSelected && !isSameNumberAsSelected && isCellLocked
+    !isSelected &&
+    !isSelectedHighlight &&
+    !isSameNumberAsSelected &&
+    !isHighlighted &&
+    isCellLocked
 
   const hasGridRBorder = (cellInfo.x + 1) % 3 === 0 && cellInfo.x != 8
   const hasGridBBorder = (cellInfo.y + 1) % 3 === 0 && cellInfo.y != 8
