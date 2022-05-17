@@ -5,6 +5,7 @@ import useGameStore from '../../store/game'
 const SudokuCellCandidates: FunctionComponent<{
   cellIndex: number
 }> = ({ cellIndex }) => {
+  const numberCounters = useGameStore((state) => state.numberCounters)
   const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
   const candidates = useGameStore((state) => state.candidates[cellIndex])
   const { grid, selectedCell } = useGameStore((state) => state)
@@ -12,9 +13,15 @@ const SudokuCellCandidates: FunctionComponent<{
   const isSelected = cellIndex === selectedCell
   function isSameNumberAsSelected(candidate: number) {
     return (
-      (selectedCell && candidate === grid[selectedCell]) ||
+      (lockedInsertNumber == null &&
+        selectedCell &&
+        candidate === grid[selectedCell]) ||
       candidate === lockedInsertNumber
     )
+  }
+
+  function isCandidateVisible(candidate: number) {
+    return numberCounters[candidate] < 9 && candidates.has(candidate)
   }
 
   return (
@@ -29,11 +36,11 @@ const SudokuCellCandidates: FunctionComponent<{
           <div
             className={classNames(
               'rounded-md h-[14px] w-[14px] md:h-4 md:w-4 flex items-center justify-center text-xs md:text-sm',
-              !candidates.has(number + 1) ? 'hidden' : '',
+              !isCandidateVisible(number + 1) ? 'hidden' : '',
               isSameNumberAsSelected(number + 1) ? 'bg-blue-400 text-white' : ''
             )}
           >
-            {candidates.has(number + 1) ? number + 1 : ''}
+            {number + 1}
           </div>
         </div>
       ))}

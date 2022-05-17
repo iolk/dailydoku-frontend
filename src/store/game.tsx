@@ -93,7 +93,14 @@ const useGameStore = create(
 
       insertNumber: (number) => {
         const selected = get().selectedCell
-        if (selected && get().lockedCells[selected]) {
+        const isCellLocked = selected && get().lockedCells[selected]
+        const cellHasNumber = selected && get().grid[selected]
+
+        if (
+          isCellLocked ||
+          (cellHasNumber && get().isCandidatesMode) ||
+          (cellHasNumber && get().lockedInsertNumber)
+        ) {
           return
         }
 
