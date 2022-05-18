@@ -4,11 +4,10 @@ import SudokuCell from './SudokuCell'
 
 const SudokuGrid: FunctionComponent = () => {
   const insertNumber = useGameStore((state) => state.insertNumber)
-  const deleteNumber = useGameStore((state) => state.deleteNumber)
 
   function manageInputFromKeyboard(e: KeyboardEvent) {
     if (e.key === 'Delete' || e.key === 'Backspace') {
-      deleteNumber()
+      insertNumber(null)
       return
     }
 

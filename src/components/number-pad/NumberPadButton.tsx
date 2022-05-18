@@ -9,7 +9,6 @@ const NumberPadButton: FunctionComponent<{
   const numberCounters = useGameStore((state) => state.numberCounters)
   const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
   const insertNumber = useGameStore((state) => state.insertNumber)
-  const deleteNumber = useGameStore((state) => state.deleteNumber)
   const setLockedInsertNumber = useGameStore(
     (state) => state.setLockedInsertNumber
   )
@@ -30,7 +29,7 @@ const NumberPadButton: FunctionComponent<{
     if (lockedInsertNumber) {
       setLockedInsertNumber(null)
     } else {
-      number ? insertNumber(number) : deleteNumber()
+      insertNumber(number ?? null)
     }
   }
 

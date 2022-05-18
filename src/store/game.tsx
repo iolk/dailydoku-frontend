@@ -1,7 +1,7 @@
-import { Difficulty, getSudoku } from 'fake-sudoku-puzzle-generator'
+import { Difficulty } from 'fake-sudoku-puzzle-generator'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
-import getCellInfo from '../utils'
+import { checkWin, computeErrors, generateGrid } from '../utils/generateGrid'
 
 export type GameState = {
   isGameWin: boolean
@@ -24,9 +24,9 @@ const initialGameState: () => GameState = () => ({
   lockedInsertNumber: null,
   grid: Array(81).fill(null),
   lockedCells: Array(81).fill(false),
+  numberCounters: Array(10).fill(0),
   errors: [...Array(81)].map(() => new Set()),
-  candidates: [...Array(81)].map(() => new Set()),
-  numberCounters: Array(10).fill(0)
+  candidates: [...Array(81)].map(() => new Set())
 })
 
 const useGameStore = create(
@@ -35,14 +35,10 @@ const useGameStore = create(
       toggleIsCandidatesMode: () => void
 
       restartGame: (difficulty: Difficulty) => void
-      generateGrid: (difficulty: Difficulty) => void
 
-      insertNumber: (number: number) => void
-      deleteNumber: () => void
+      insertNumber: (number: number | null) => void
       replaceNumber: (number: number | null) => void
-      checkWin: () => void
 
-      computeErrors: () => void
       removeErrors: () => void
 
       toggleCandidate: (number: number) => void
@@ -62,92 +58,72 @@ const useGameStore = create(
         })),
 
       restartGame: (difficulty: Difficulty) => {
-        set((state) => ({
-          ...state,
-          ...initialGameState(),
-          isGameInitialized: true
-        }))
+        const grid = generateGrid(difficulty)
 
-        get().generateGrid(difficulty)
-      },
-
-      generateGrid: (difficulty: Difficulty) =>
         set((state) => {
-          if (state.grid.find((cell) => cell !== null)) {
-            return state
-          }
+          const lockedCellsCopy = [...state.lockedCells]
+          const numberCountersCopy = [...state.numberCounters]
 
-          const puzzle = getSudoku(difficulty)
-          let i = 0
-          const grid = []
-          const numberCounters = Array(10).fill(0)
-          for (const row of puzzle) {
-            for (const element of row) {
-              grid[i++] = element
-              if (element) {
-                numberCounters[element]++
-                state.lockedCells[i - 1] = true
-              }
+          grid.forEach((number, index) => {
+            if (number) {
+              numberCountersCopy[number]++
+              lockedCellsCopy[index] = true
             }
-          }
+          })
+
           return {
             ...state,
-            numberCounters,
-            grid
+            ...initialGameState(),
+            grid: grid,
+            lockedCells: lockedCellsCopy,
+            numberCounters: numberCountersCopy,
+            isGameInitialized: true
           }
-        }),
-
-      checkWin: () => {
-        const isWin =
-          get().grid.every((cell) => cell != null) &&
-          !get().errors.some((errors) => errors.size > 0)
-
-        if (isWin) {
-          set((state) => ({
-            ...state,
-            isGameWin: isWin
-          }))
-        }
+        })
       },
 
       insertNumber: (number) => {
-        const selected = get().selectedCell
-        const isCellLocked = selected && get().lockedCells[selected]
-        const cellHasNumber = selected && get().grid[selected]
+        const state = get()
+        if (state.selectedCell === null) {
+          return
+        }
+        const isCellLocked = state.lockedCells[state.selectedCell]
+        const cellHasNumber = state.grid[state.selectedCell] !== null
 
         if (
           isCellLocked ||
-          (cellHasNumber && get().isCandidatesMode) ||
-          (cellHasNumber && get().lockedInsertNumber)
+          (cellHasNumber && state.isCandidatesMode) ||
+          (cellHasNumber && state.lockedInsertNumber)
         ) {
           return
         }
 
-        if (get().isCandidatesMode) {
-          get().toggleCandidate(number)
+        if (state.isCandidatesMode) {
+          number !== null && state.toggleCandidate(number)
         } else {
-          get().replaceNumber(number)
-          get().removeErrors()
+          state.replaceNumber(number)
+          state.removeErrors()
 
-          if (number) {
-            get().computeErrors()
-            get().checkWin()
+          if (number !== null) {
+            const errors = computeErrors(
+              state.selectedCell,
+              state.grid,
+              state.errors
+            )
+            const isGameWin = checkWin(state.grid, state.errors)
+
+            set((state) => ({
+              ...state,
+              errors,
+              isGameWin
+            }))
           }
         }
       },
 
-      deleteNumber: () => {
-        const selected = get().selectedCell
-        if (selected && get().lockedCells[selected]) {
-          return
-        }
-        get().replaceNumber(null)
-        get().removeErrors()
-      },
-
       removeErrors: () =>
         set((state) => {
-          if (state.selectedCell == null) {
+          if (state.selectedCell === null) {
             return state
           }
 
@@ -193,59 +169,6 @@ const useGameStore = create(
           }
         }),
 
-      computeErrors: () =>
-        set((state) => {
-          const errorsCopy = [...state.errors]
-          if (state.selectedCell == null) {
-            return state
-          }
-          const info = getCellInfo(state.selectedCell)
-
-          // Row check
-          for (let i = info.y * 9; i < info.y * 9 + 9; i++) {
-            if (
-              i != state.selectedCell &&
-              state.grid[i] &&
-              state.grid[i] === state.grid[state.selectedCell]
-            ) {
-              errorsCopy[i].add(state.selectedCell)
-              errorsCopy[state.selectedCell].add(i)
-            }
-          }
-
-          // Column check
-          for (let i = info.x; i < 81; i += 9) {
-            if (
-              i != state.selectedCell &&
-              state.grid[i] &&
-              state.grid[i] === state.grid[state.selectedCell]
-            ) {
-              errorsCopy[i].add(state.selectedCell)
-              errorsCopy[state.selectedCell].add(i)
-            }
-          }
-
-          // Box check
-          for (let i = info.quadrant.x; i < info.quadrant.x + 3; i++) {
-            for (let j = info.quadrant.y; j < info.quadrant.y + 3; j++) {
-              const cell = i + j * 9
-              if (
-                cell != state.selectedCell &&
-                state.grid[cell] &&
-                state.grid[cell] === state.grid[state.selectedCell]
-              ) {
-                errorsCopy[cell].add(state.selectedCell)
-                errorsCopy[state.selectedCell].add(cell)
-              }
-            }
-          }
-
-          return {
-            ...state,
-            errors: errorsCopy
-          }
-        }),
-
       toggleCandidate: (number) =>
         set((state) => {
           if (state.selectedCell == null) {
@@ -266,11 +189,11 @@ const useGameStore = create(
         }),
 
       selectCell: (cell: number | null) => {
-        get().setSelectedCell(cell)
+        const state = get()
+        state.setSelectedCell(cell)
 
-        const lockedInsertNumber = get().lockedInsertNumber
-        if (lockedInsertNumber) {
-          get().insertNumber(lockedInsertNumber)
+        if (state.lockedInsertNumber) {
+          state.insertNumber(state.lockedInsertNumber)
         }
       },
 
