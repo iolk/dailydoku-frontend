@@ -58,5 +58,5 @@ export function computeErrors(
     }
   }
 
-  return errors
+  return errorsCopy
 }
