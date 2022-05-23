@@ -11,17 +11,20 @@ const SudokuCell: FunctionComponent<{
   const isCellLocked = useGameStore((state) => state.lockedCells[cellIndex])
   const errors = useGameStore((state) => state.errors)
   const selectedCell = useGameStore((state) => state.selectedCell)
+  const lastSelectedNumber = useGameStore((state) => state.lastSelectedNumber)
   const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
   const selectCell = useGameStore((state) => state.selectCell)
 
   const cell = grid[cellIndex]
-  const selectedCellNumber = selectedCell != null ? grid[selectedCell] : null
 
   const selectedCellInfo =
     selectedCell != null ? getCellInfo(selectedCell) : null
   const cellInfo = getCellInfo(cellIndex)
 
-  const isSelected = cellIndex === selectedCell && lockedInsertNumber == null
+  const isSelected =
+    cellIndex === selectedCell &&
+    lockedInsertNumber == null &&
+    lastSelectedNumber == null
 
   const hasError = errors[cellIndex].size > 0
 
@@ -29,11 +32,11 @@ const SudokuCell: FunctionComponent<{
     (lockedInsertNumber != null && cell === lockedInsertNumber) ||
     (lockedInsertNumber == null &&
       !isSelected &&
-      selectedCellNumber != null &&
-      cell === selectedCellNumber)
+      lastSelectedNumber != null &&
+      cell === lastSelectedNumber)
 
   const isSelectedHighlight =
-    lockedInsertNumber != null &&
+    (lockedInsertNumber != null || lastSelectedNumber != null) &&
     cellIndex === selectedCell &&
     !isSameNumberAsSelected
 

@@ -7,15 +7,16 @@ const SudokuCellCandidates: FunctionComponent<{
 }> = ({ cellIndex }) => {
   const numberCounters = useGameStore((state) => state.numberCounters)
   const lockedInsertNumber = useGameStore((state) => state.lockedInsertNumber)
+  const lastSelectedNumber = useGameStore((state) => state.lastSelectedNumber)
   const candidates = useGameStore((state) => state.candidates[cellIndex])
-  const { grid, selectedCell } = useGameStore((state) => state)
+  const { selectedCell } = useGameStore((state) => state)
 
   const isSelected = cellIndex === selectedCell
   function isSameNumberAsSelected(candidate: number) {
     return (
       (lockedInsertNumber == null &&
-        selectedCell &&
-        candidate === grid[selectedCell]) ||
+        lastSelectedNumber != null &&
+        candidate === lastSelectedNumber) ||
       candidate === lockedInsertNumber
     )
   }

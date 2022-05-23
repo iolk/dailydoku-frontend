@@ -8,6 +8,7 @@ export type GameState = {
   isGameInitialized: boolean
   isCandidatesMode: boolean
   selectedCell: number | null
+  lastSelectedNumber: number | null
   lockedInsertNumber: number | null
   grid: (number | null)[]
   lockedCells: boolean[]
@@ -21,6 +22,7 @@ const initialGameState: () => GameState = () => ({
   isGameInitialized: false,
   isCandidatesMode: false,
   selectedCell: null,
+  lastSelectedNumber: null,
   lockedInsertNumber: null,
   grid: Array(81).fill(null),
   lockedCells: Array(81).fill(false),
@@ -43,8 +45,8 @@ const useGameStore = create(
 
       toggleCandidate: (number: number) => void
 
-      selectCell: (cell: number | null) => void
-      setSelectedCell: (cell: number | null) => void
+      selectCell: (cell: number) => void
+      setSelectedCell: (cell: number) => void
       setLockedInsertNumber: (number: number | null) => void
     }
   >(
@@ -188,7 +190,7 @@ const useGameStore = create(
           }
         }),
 
-      selectCell: (cell: number | null) => {
+      selectCell: (cell: number) => {
         const state = get()
         state.setSelectedCell(cell)
 
@@ -197,18 +199,26 @@ const useGameStore = create(
         }
       },
 
-      setSelectedCell: (cell: number | null) =>
+      setSelectedCell: (cell: number) => {
+        const canChangeLastSelectedNumber =
+          get().grid[cell] != null && get().lockedInsertNumber == null
+
         set((state) => {
           return {
             ...state,
-            selectedCell: cell
+            selectedCell: cell,
+            lastSelectedNumber: canChangeLastSelectedNumber
+              ? state.grid[cell]
+              : state.lastSelectedNumber
           }
-        }),
+        })
+      },
 
       setLockedInsertNumber: (number: number | null) =>
         set((state) => ({
           ...state,
-          lockedInsertNumber: number
+          lockedInsertNumber: number,
+          lastSelectedNumber: number ?? state.lastSelectedNumber
         }))
     }),
     {
