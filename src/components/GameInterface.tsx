@@ -14,7 +14,7 @@ const GameInterface: FunctionComponent = () => {
       {isGameWin ? <GameWinModal /> : ''}
       {!isGameInitialized ? <GameInitModal /> : ''}
 
-      <div className="min-h-screen relative flex justify-center items-center bg-slate-900">
+      <div className="min-h-screen relative flex justify-center items-center bg-slate-900 select-none">
         <div className="fixed z-10 w-full md:w-9/12 px-2 md:px-0 mx-auto lg:flex gap-10">
           <div className="w-full">
             <SudokuGrid />

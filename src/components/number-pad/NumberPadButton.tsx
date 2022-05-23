@@ -27,7 +27,7 @@ const NumberPadButton: FunctionComponent<{
     if (isDisabled) {
       return
     }
-    if (lockedInsertNumber) {
+    if (lockedInsertNumber && number !== lockedInsertNumber) {
       setLockedInsertNumber(null)
     } else {
       number ? insertNumber(number) : deleteNumber()
